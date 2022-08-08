@@ -19,21 +19,57 @@ public class Pagamento {
     @Positive
     private BigDecimal valor;
 
-    @NotBlank
+
     @Size(max = 100)
     private String nome;
 
-    @NotBlank
+
     @Size(max = 19)
     private String numero;
 
-    @NotBlank
+
     @Size(max = 7)
     private String expiracao;
 
-    @NotBlank
+
     @Size(min = 3, max = 3)
     private String codigo;
+
+    public Long getId() {
+        return id;
+    }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public String getExpiracao() {
+        return expiracao;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public Long getPedidoId() {
+        return pedidoId;
+    }
+
+    public Long getFormaDePagamentoId() {
+        return formaDePagamentoId;
+    }
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -43,4 +79,42 @@ public class Pagamento {
     private Long pedidoId;
     @NotNull
     private Long formaDePagamentoId;
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setValor(BigDecimal valor) {
+        this.valor = valor;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public void setExpiracao(String expiracao) {
+        this.expiracao = expiracao;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setPedidoId(Long pedidoId) {
+        this.pedidoId = pedidoId;
+    }
+
+    public void setFormaDePagamentoId(Long formaDePagamentoId) {
+        this.formaDePagamentoId = formaDePagamentoId;
+    }
+
+
 }
