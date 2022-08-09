@@ -1,6 +1,7 @@
 package com.lucasbrunkhorst.pagamentos.service;
 
 import com.lucasbrunkhorst.pagamentos.dto.PagamentoDTO;
+import com.lucasbrunkhorst.pagamentos.http.PedidoClient;
 import com.lucasbrunkhorst.pagamentos.model.Pagamento;
 import com.lucasbrunkhorst.pagamentos.model.Status;
 import com.lucasbrunkhorst.pagamentos.repository.PagamentoRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Optional;
 
 @Service
 public class PagamentoService {
@@ -21,6 +23,8 @@ public class PagamentoService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PedidoClient pedido;
 
     public Page<PagamentoDTO> obterTodos(Pageable paginacao) {
         return pagamentoRepository
@@ -32,7 +36,9 @@ public class PagamentoService {
         Pagamento pagamento = pagamentoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException());
 
-        return modelMapper.map(pagamento, PagamentoDTO.class);
+        PagamentoDTO dto = modelMapper.map(pagamento, PagamentoDTO.class);
+        dto.setItens(pedido.obterItensPedido(pagamento.getPedidoId()).getItens());
+        return dto;
     }
 
     public PagamentoDTO criarPagamento(PagamentoDTO dto) {
@@ -50,8 +56,29 @@ public class PagamentoService {
         return modelMapper.map(pagamento, PagamentoDTO.class);
     }
 
+    public void confirmarPagamento(Long id){
+        Optional<Pagamento> pagamento = pagamentoRepository.findById(id);
+
+        if (!pagamento.isPresent()) {
+            throw new EntityNotFoundException();
+        }
+        pagamento.get().setStatus(Status.CONFIRMADO);
+        pagamentoRepository.save(pagamento.get());
+        pedido.atualizaPagamento(pagamento.get().getPedidoId());
+    }
+
     public void excluirPagamento(Long id) {
         pagamentoRepository.deleteById(id);
     }
 
+    public void alteraStatus(Long id) {
+        Optional<Pagamento> pagamento = pagamentoRepository.findById(id);
+
+        if (!pagamento.isPresent()) {
+            throw new EntityNotFoundException();
+        }
+
+        pagamento.get().setStatus(Status.CONFIRMADO_SEM_INTEGRACAO);
+        pagamentoRepository.save(pagamento.get());
+    }
 }

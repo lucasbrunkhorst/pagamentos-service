@@ -2,6 +2,7 @@ package com.lucasbrunkhorst.pagamentos.controller;
 
 import com.lucasbrunkhorst.pagamentos.dto.PagamentoDTO;
 import com.lucasbrunkhorst.pagamentos.service.PagamentoService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,16 @@ public class PagamentoController {
         return ResponseEntity.ok(dto);
     }
 
+    @PatchMapping("/{id}/confirmar")
+    @CircuitBreaker(name = "atualizaPedido", fallbackMethod = "pagamentoAutorizadoComIntegracaoPendente")
+    public void confirmarPagamento(@PathVariable @NotNull Long id){
+        pagamentoService.confirmarPagamento(id);
+    }
+
+    public void pagamentoAutorizadoComIntegracaoPendente(Long id, Exception e){
+        pagamentoService.alteraStatus(id);
+    }
+
     @PostMapping
     public ResponseEntity<PagamentoDTO> cadastrar(@RequestBody @Valid PagamentoDTO dto, UriComponentsBuilder uriBuilder) {
         PagamentoDTO pagamento = pagamentoService.criarPagamento(dto);
@@ -46,6 +57,7 @@ public class PagamentoController {
         PagamentoDTO atualizado = pagamentoService.atualizarPagamento(id, dto);
         return ResponseEntity.ok(atualizado);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<PagamentoDTO> remover(@PathVariable @NotNull Long id) {

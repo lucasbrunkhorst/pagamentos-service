@@ -1,8 +1,10 @@
 package com.lucasbrunkhorst.pagamentos.dto;
 
+import com.lucasbrunkhorst.pagamentos.model.ItemDoPedido;
 import com.lucasbrunkhorst.pagamentos.model.Status;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class PagamentoDTO {
 
@@ -15,6 +17,16 @@ public class PagamentoDTO {
     private Status status;
     private Long formaDePagamentoId;
     private Long pedidoId;
+
+    private List<ItemDoPedido> itens;
+
+    public List<ItemDoPedido> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<ItemDoPedido> itens) {
+        this.itens = itens;
+    }
 
     public void setId(Long id) {
         this.id = id;
